@@ -1,6 +1,7 @@
 import './globals.css'
 import { Providers } from './providers'
 import { Toaster } from '@/components/ui/toaster'
+import Script from 'next/script'
 
 export const metadata = {
   title: 'MyDiary — Your Personal Journal',
@@ -10,12 +11,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <script src="/devtools-guard.js" />
-      </head>
       <body className="font-sans antialiased">
         <Providers>{children}</Providers>
         <Toaster />
+        <Script src="/devtools-guard.js" strategy="beforeInteractive" />
       </body>
     </html>
   )
