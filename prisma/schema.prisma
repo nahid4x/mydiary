@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  bio       String?
+  avatar    String?
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deletionRequested     Boolean   @default(false)
+  deletionRequestedAt   DateTime?
+  scheduledDeletionDate DateTime?
+  deleteReason          String?
+  deleteFeedback        String?
+
+  diaries        Diary[]
+  supportTickets SupportTicket[]
+  notifications  Notification[]
+}
+
+model Diary {
+  id         String   @id @default(cuid())
+  title      String
+  content    String
+  mood       String?
+  weather    String?
+  privacy    String   @default("private")
+  isFavorite Boolean  @default(false)
+  isArchived Boolean  @default(false)
+  image      String?
+  entryDate  DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tags DiaryTag[]
+}
+
+model Tag {
+  id      String     @id @default(cuid())
+  name    String     @unique
+  diaries DiaryTag[]
+}
+
+model DiaryTag {
+  diaryId String
+  tagId   String
+
+  diary Diary @relation(fields: [diaryId], references: [id], onDelete: Cascade)
+  tag   Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([diaryId, tagId])
+}
+
+enum TicketCategory {
+  BUG
+  FEATURE_REQUEST
+  PRIVACY_CONCERN
+  SECURITY_VULNERABILITY
+  ACCOUNT_ISSUE
+  PAYMENT
+  CONTENT_PROBLEM
+  PERFORMANCE_ISSUE
+  UI_UX_FEEDBACK
+  TRANSLATION_ISSUE
+  DATA_SYNC_ISSUE
+  OTHER
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum TicketStatus {
+  OPEN
+  IN_REVIEW
+  NEED_MORE_INFO
+  RESOLVED
+  CLOSED
+}
+
+model SupportTicket {
+  id           String   @id @default(cuid())
+  ticketNumber String   @unique
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  category    TicketCategory
+  priority    TicketPriority @default(MEDIUM)
+  status      TicketStatus   @default(OPEN)
+
+  subject          String
+  description      String
+  stepsToReproduce String?
+
+  browser          String?
+  os               String?
+  screenResolution String?
+  appVersion       String?
+  language         String?
+  timezone         String?
+
+  contactPermission Boolean @default(false)
+
+  assignedAdminId String?
+  adminReply      String?
+
+  attachments TicketAttachment[]
+  replies     TicketReply[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  closedAt  DateTime?
+
+  @@index([userId])
+  @@index([status])
+}
+
+model TicketAttachment {
+  id        String        @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  url       String
+  filename  String
+  mimeType  String
+  size      Int
+  createdAt DateTime      @default(now())
+}
+
+model TicketReply {
+  id        String        @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId  String
+  isAdmin   Boolean       @default(false)
+  message   String
+  createdAt DateTime      @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  body      String?
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
+enum UserRole {
+  USER
+  ADMIN
+}
+
