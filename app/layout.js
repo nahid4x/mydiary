@@ -10,6 +10,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script src="/devtools-guard.js" />
+      </head>
       <body className="font-sans antialiased">
         <Providers>{children}</Providers>
         <Toaster />
