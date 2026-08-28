@@ -9,16 +9,6 @@ export const metadata = {
   description: 'A calm, private space to write, reflect, and remember.',
 }
 
-/* ---------------------------------------------------------
-   Design tokens (see accompanying DESIGN_NOTES.md)
-   bg        #FCFBF8 / #F8F7F4
-   ink       #17181C (headings) / #4B4F58 (body)
-   orange    #FF7A45 → #FF9A62
-   coral     #FF6B6B
-   violet    #8B7CF6
-   ring      #ECE8DF (hairline borders)
---------------------------------------------------------- */
-
 const features = [
   { icon: PenLine, title: 'Beautiful writing', desc: 'A distraction-free editor that gets out of the way so your thoughts can flow.' },
   { icon: Sparkles, title: 'Mood tracking', desc: 'Log how you feel in one tap and watch the emotional shape of your weeks emerge.' },
@@ -27,7 +17,6 @@ const features = [
   { icon: CloudCog, title: 'Synced everywhere', desc: 'Start an entry on your phone, finish it on your laptop. It just follows you.' },
   { icon: Search, title: 'Find anything', desc: 'Search by word, mood, or tag and land on the exact entry you\u2019re thinking of.' },
 ]
-
 
 const emotionStats = [
   { label: 'Content', pct: 38 },
@@ -45,32 +34,14 @@ const trustBar = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#FFFCFA] text-[#17181C] antialiased selection:bg-[#FF7A45]/20">
-      {/* Ambient light */}
-      <div className="pointer-events-none fixed inset-0 -z-10" style={{overflow: 'hidden', width: '100vw', left: 0}}>
-        <div className="absolute -top-48 -left-40 w-[38rem] h-[38rem] rounded-full bg-[#FF9A62]/25 blur-[140px]" />
-        <div className="absolute top-20 -right-32 w-[30rem] h-[30rem] rounded-full bg-[#8B7CF6]/15 blur-[130px]" />
-        <div className="absolute bottom-0 left-1/3 w-[26rem] h-[26rem] rounded-full bg-[#FF6B6B]/10 blur-[120px]" />
-        <div
-          className="absolute inset-0 opacity-[0.4]"
-          style={{
-            backgroundImage: 'radial-gradient(circle,#00000008 1px,transparent 1px)',
-            backgroundSize: '28px 28px',
-            maskImage: 'radial-gradient(ellipse 60% 50% at 50% 0%, black 20%, transparent 70%)',
-          }}
-        />
-        <div className="absolute top-10 left-10 w-[42rem] h-[42rem] rounded-full bg-[#FF9A62]/[0.05] blur-[180px]" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[34rem] h-[34rem] rounded-full bg-[#FFE9D6]/[0.5] blur-[180px]" />
-        <div className="absolute top-24 right-[18%] w-[40rem] h-[40rem] rounded-full bg-[#8B7CF6]/[0.06] blur-[180px]" />
-        <div className="absolute -bottom-32 -left-32 w-[36rem] h-[36rem] rounded-full bg-[#FF6B9D]/[0.05] blur-[170px]" />
-        <div className="absolute -bottom-24 -right-24 w-[34rem] h-[34rem] rounded-full bg-[#5B8DEF]/[0.05] blur-[170px]" />
-        <div
-          className="absolute inset-0 opacity-[0.025] mix-blend-multiply"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-          }}
-        />
+    <div className="min-h-screen bg-[#FFFCFA] text-[#17181C] antialiased selection:bg-[#FF7A45]/20" style={{ overflowX: 'hidden', width: '100%' }}>
+      {/* Ambient light — clipped to viewport, no negative positions leaking */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -10, overflow: 'hidden', pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '38rem', height: '38rem', borderRadius: '50%', background: 'rgba(255,154,98,0.25)', filter: 'blur(140px)' }} />
+        <div style={{ position: 'absolute', top: '5rem', right: 0, width: '30rem', height: '30rem', borderRadius: '50%', background: 'rgba(139,124,246,0.15)', filter: 'blur(130px)' }} />
+        <div style={{ position: 'absolute', bottom: 0, left: '33%', width: '26rem', height: '26rem', borderRadius: '50%', background: 'rgba(255,107,107,0.10)', filter: 'blur(120px)' }} />
+        <div style={{ position: 'absolute', top: '25%', left: '50%', transform: 'translateX(-50%)', width: '34rem', height: '34rem', borderRadius: '50%', background: 'rgba(255,233,214,0.5)', filter: 'blur(180px)' }} />
+        <div style={{ position: 'absolute', top: '6rem', right: '18%', width: '40rem', height: '40rem', borderRadius: '50%', background: 'rgba(139,124,246,0.06)', filter: 'blur(180px)' }} />
       </div>
 
       {/* Nav */}
@@ -83,9 +54,9 @@ export default function LandingPage() {
               animation: 'navSweep 6s ease-in-out infinite',
             }}
           />
-          <div className="h-[52px] flex items-center justify-between px-5">
+          <div className="h-[52px] flex items-center justify-between px-3 sm:px-5">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-[10px] flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#FF7A45,#FF9A62)' }}>
+              <div className="w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg,#FF7A45,#FF9A62)' }}>
                 <PenLine className="w-4 h-4 text-white" strokeWidth={2.25} />
               </div>
               <span className="font-serif font-semibold text-[17px] tracking-tight">MyDiary</span>
@@ -101,10 +72,10 @@ export default function LandingPage() {
               </Link>
               <Link
                 href="/register"
-                className="text-white text-[13.5px] font-semibold px-4 py-2 rounded-xl transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[2px] hover:scale-[1.03] flex items-center gap-1.5 shadow-[0_6px_20px_-4px_rgba(255,122,69,0.55)]"
+                className="text-white text-[13.5px] font-semibold px-3 py-2 rounded-xl transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[2px] hover:scale-[1.03] flex items-center gap-1.5 shadow-[0_6px_20px_-4px_rgba(255,122,69,0.55)]"
                 style={{ background: 'linear-gradient(135deg,#FF7A45,#FF9A62)' }}
               >
-                Get started <ArrowRight className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Get started </span><ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
@@ -113,17 +84,17 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section
-  id="preview"
-  className="max-w-[1400px] mx-auto px-4 pt-[150px] pb-[170px] relative overflow-hidden"
-  style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 440px) 1fr', gap: '64px', alignItems: 'start' }}
->
-        <div className="animate-[fade-in_0.7s_ease-out_both]">
+        id="preview"
+        className="max-w-[1400px] mx-auto px-4 pt-[150px] pb-[170px] relative"
+        style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 440px) 1fr', gap: '64px', alignItems: 'start', overflow: 'hidden' }}
+      >
+        <div className="animate-[fade-in_0.7s_ease-out_both]" style={{ minWidth: 0 }}>
           <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md text-[#FF7A45] px-3.5 py-1.5 rounded-full text-[13px] font-medium mb-7 border border-[#ECE8DF] shadow-sm">
-            <Sparkles className="w-3.5 h-3.5" />
-            Your thoughts deserve a beautiful home
+            <Sparkles className="w-3.5 h-3.5 shrink-0" />
+            <span>Your thoughts deserve a beautiful home</span>
           </div>
 
-          <h1 className="font-serif font-extrabold mb-4 tracking-tight text-[5.25rem] leading-[0.9]">
+          <h1 className="font-serif font-extrabold mb-4 tracking-tight leading-[0.9]" style={{ fontSize: 'clamp(3rem, 10vw, 5.25rem)', wordBreak: 'break-word' }}>
             <span className="block text-[#111216]">Write</span>
             <span className="block text-[#111216] -mt-2">without</span>
             <span
@@ -184,7 +155,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-3 pt-6 border-t border-[#ECE8DF]">
             <div className="flex -space-x-2">
               {['#FFD9BC', '#E5DBFB', '#C9E4DE', '#F6D6D6'].map((c, i) => (
-                <div key={i} className="w-7 h-7 rounded-full border-2 border-white" style={{ background: c }} />
+                <div key={i} className="w-7 h-7 rounded-full border-2 border-white shrink-0" style={{ background: c }} />
               ))}
             </div>
             <div>
@@ -196,68 +167,65 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Writing application — real journal content inside the card, not a blank placeholder. Frame, rotation, and shadow unchanged. */}
+        {/* Journal card — hidden on mobile */}
         <div
-          className="relative animate-[fade-in_0.8s_ease-out_0.15s_both]"
-          style={{ paddingTop: '32px', paddingBottom: '32px', paddingLeft: '20px', paddingRight: '20px', marginLeft: '0px' }}
+          className="relative animate-[fade-in_0.8s_ease-out_0.15s_both] hidden md:block"
+          style={{ paddingTop: '32px', paddingBottom: '32px', paddingLeft: '20px', paddingRight: '20px' }}
         >
           <div style={{ maxWidth: '620px', width: '100%' }}>
-          <div
-            className="relative z-[5] rounded-[24px] overflow-hidden animate-[floatRotate_9s_ease-in-out_infinite] transition-transform duration-500 hover:!scale-[1.008]"
-            style={{
-              background: '#FFFFFF',
-              border: '1px solid rgba(23,24,28,0.07)',
-              boxShadow: '0 30px 60px -12px rgba(23,24,28,0.22), 0 4px 12px rgba(23,24,28,0.08)',
-              minHeight: '420px',
-            }}
-          >
-            {/* Application header — no browser chrome, just the product identity */}
-            <div className="flex items-center gap-2.5 px-7 pt-6 pb-5">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg,#FF7A45,#FF9A62)' }}>
-                <PenLine className="w-3.5 h-3.5 text-white" strokeWidth={2.25} />
+            <div
+              className="relative z-[5] rounded-[24px] overflow-hidden animate-[floatRotate_9s_ease-in-out_infinite] transition-transform duration-500 hover:!scale-[1.008]"
+              style={{
+                background: '#FFFFFF',
+                border: '1px solid rgba(23,24,28,0.07)',
+                boxShadow: '0 30px 60px -12px rgba(23,24,28,0.22), 0 4px 12px rgba(23,24,28,0.08)',
+                minHeight: '420px',
+              }}
+            >
+              <div className="flex items-center gap-2.5 px-7 pt-6 pb-5">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg,#FF7A45,#FF9A62)' }}>
+                  <PenLine className="w-3.5 h-3.5 text-white" strokeWidth={2.25} />
+                </div>
+                <div>
+                  <p className="font-serif font-semibold text-[14px] leading-none">MyDiary</p>
+                  <p className="text-[10.5px] text-[#B0B4BB] mt-0.5">Personal Journal</p>
+                </div>
               </div>
-              <div>
-                <p className="font-serif font-semibold text-[14px] leading-none">MyDiary</p>
-                <p className="text-[10.5px] text-[#B0B4BB] mt-0.5">Personal Journal</p>
+              <div className="border-t border-[#F1EFE9]" />
+
+              <div className="px-7 pt-6 pb-7">
+                <p className="text-[12px] text-[#B0B4BB] mb-2">Tuesday, August 5</p>
+                <h3 className="font-serif text-[24px] text-[#17181C] leading-snug mb-5">A quiet evening</h3>
+                <div className="space-y-3.5">
+                  <p className="text-[14.5px] text-[#6B6F78] leading-[1.85]">
+                    Today felt slower than usual, in the best way. I made tea, sat by
+                  </p>
+                  <p className="text-[14.5px] text-[#6B6F78] leading-[1.85]">
+                    the window, and let my thoughts settle before writing anything
+                  </p>
+                  <p className="text-[14.5px] text-[#6B6F78] leading-[1.85] inline-block">
+                    down. There's something grounding about
+                    <span
+                      className="inline-block ml-0.5"
+                      style={{ borderRight: '2px solid #FF7A59', animation: 'caretBlink 0.8s step-end infinite' }}
+                    >
+                      &nbsp;
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="border-t border-[#F1EFE9]" />
+              <div className="flex items-center gap-4 px-7 py-4 text-[12px] text-[#8A8E96]">
+                <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> Private</span>
+                <span className="flex items-center gap-1.5 text-[#4CD37E] font-medium"><Check className="w-3.5 h-3.5" /> Auto-saved</span>
               </div>
             </div>
-            <div className="border-t border-[#F1EFE9]" />
-
-            <div className="px-7 pt-6 pb-7">
-              <p className="text-[12px] text-[#B0B4BB] mb-2">Tuesday, August 5</p>
-              <h3 className="font-serif text-[24px] text-[#17181C] leading-snug mb-5">A quiet evening</h3>
-
-              {/* Elegant multiline preview with a subtle ruled-paper rhythm */}
-              <div className="space-y-3.5">
-                <p className="text-[14.5px] text-[#6B6F78] leading-[1.85]">
-                  Today felt slower than usual, in the best way. I made tea, sat by
-                </p>
-                <p className="text-[14.5px] text-[#6B6F78] leading-[1.85]">
-                  the window, and let my thoughts settle before writing anything
-                </p>
-                <p className="text-[14.5px] text-[#6B6F78] leading-[1.85] inline-block">
-                  down. There's something grounding about
-                  <span
-                    className="inline-block ml-0.5"
-                    style={{ borderRight: '2px solid #FF7A59', animation: 'caretBlink 0.8s step-end infinite' }}
-                  >
-                    &nbsp;
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            <div className="border-t border-[#F1EFE9]" />
-            <div className="flex items-center gap-4 px-7 py-4 text-[12px] text-[#8A8E96]">
-              <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> Private</span>
-              <span className="flex items-center gap-1.5 text-[#4CD37E] font-medium"><Check className="w-3.5 h-3.5" /> Auto-saved</span>
-            </div>
-          </div>
           </div>
         </div>
       </section>
 
-      {/* Mood analytics — replaces emoji chip strip */}
+      {/* Mood analytics */}
       <section className="max-w-6xl mx-auto px-4 py-24">
         <div className="grid lg:grid-cols-[1.1fr,1fr] gap-10 items-center">
           <div>
@@ -345,11 +313,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CTA — premium gradient panel, single hero focal point. Aurora-mesh gradient, glass pills, white button. */}
+      {/* CTA */}
       <section className="max-w-[1100px] mx-auto px-4 relative" style={{ paddingTop: '48px', paddingBottom: '48px' }}>
-        {/* Faint depth behind the card — the page shouldn't end abruptly */}
-        <div className="absolute -top-16 left-1/4 w-96 h-96 rounded-full bg-[#FF7A45]/[0.08] blur-[140px] -z-10" />
-        <div className="absolute top-1/2 right-1/4 w-96 h-96 rounded-full bg-[#8B7CF8]/[0.08] blur-[140px] -z-10" />
         <div
           className="text-center relative overflow-hidden animate-[gradientShift_28s_ease-in-out_infinite]"
           style={{
@@ -360,21 +325,11 @@ export default function LandingPage() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            // desaturated ~18% from the previous version for a softer, less CSS-gradient look
             background: 'radial-gradient(circle at 15% 15%, #F2814F, transparent 55%), radial-gradient(circle at 50% 45%, #E6907F, transparent 62%), radial-gradient(circle at 85% 85%, #8478D9, transparent 55%), linear-gradient(135deg, #F2814F, #E6907F, #8478D9)',
             backgroundSize: '200% 200%',
             filter: 'drop-shadow(0 40px 80px rgba(23,24,28,0.14))',
           }}
         >
-          {/* Faint noise for premium texture */}
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.05] mix-blend-overlay"
-            style={{
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-            }}
-          />
-          {/* Subtle radial light lifting the headline */}
           <div className="pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 w-[26rem] h-[26rem] rounded-full bg-white/10 blur-[100px]" />
 
           <h2
@@ -418,7 +373,7 @@ export default function LandingPage() {
             }}
           >
             Create your diary
-            <ArrowRight className="w-4.5 h-4.5" />
+            <ArrowRight className="w-4 h-4" />
           </Link>
 
           <p className="text-white/80 text-[13px] relative" style={{ marginTop: '24px' }}>
@@ -441,18 +396,6 @@ export default function LandingPage() {
       </footer>
 
       <style>{`
-        @media (max-width: 768px) {
-          #preview { 
-            grid-template-columns: 1fr !important;
-            padding-top: 80px !important;
-            padding-bottom: 80px !important;
-          }
-          #preview > div:nth-child(2) { 
-            margin-left: 0 !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-          }
-        }
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }
@@ -472,6 +415,13 @@ export default function LandingPage() {
         @keyframes gradientShift {
           0%, 100% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
+        }
+        @media (max-width: 768px) {
+          #preview {
+            grid-template-columns: 1fr !important;
+            padding-top: 80px !important;
+            padding-bottom: 80px !important;
+          }
         }
         @media (prefers-reduced-motion: reduce) {
           * { animation: none !important; }
