@@ -114,7 +114,7 @@ export default function LandingPage() {
       {/* Hero */}
       <section
   id="preview"
-  className="max-w-[1400px] mx-auto px-4 pt-[150px] pb-[170px] relative"
+  className="max-w-[1400px] mx-auto px-4 pt-[150px] pb-[170px] relative overflow-hidden"
   style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 440px) 1fr', gap: '64px', alignItems: 'start' }}
 >
         <div className="animate-[fade-in_0.7s_ease-out_both]">
