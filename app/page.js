@@ -113,11 +113,10 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section
-        id="preview"
-        className="max-w-[1400px] mx-auto px-4 pt-[150px] pb-[170px] relative"
-        style={{ display: 'grid', gridTemplateColumns: '440px 1fr', gap: '64px', alignItems: 'start' }}
-
-      >
+  id="preview"
+  className="max-w-[1400px] mx-auto px-4 pt-[150px] pb-[170px] relative"
+  style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 440px) 1fr', gap: '64px', alignItems: 'start' }}
+>
         <div className="animate-[fade-in_0.7s_ease-out_both]">
           <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md text-[#FF7A45] px-3.5 py-1.5 rounded-full text-[13px] font-medium mb-7 border border-[#ECE8DF] shadow-sm">
             <Sparkles className="w-3.5 h-3.5" />
@@ -200,7 +199,7 @@ export default function LandingPage() {
         {/* Writing application — real journal content inside the card, not a blank placeholder. Frame, rotation, and shadow unchanged. */}
         <div
           className="relative animate-[fade-in_0.8s_ease-out_0.15s_both]"
-          style={{ paddingTop: '32px', paddingBottom: '32px', paddingLeft: '20px', paddingRight: '20px', marginLeft: '-48px' }}
+          style={{ paddingTop: '32px', paddingBottom: '32px', paddingLeft: '20px', paddingRight: '20px', marginLeft: '0px' }}
         >
           <div style={{ maxWidth: '620px', width: '100%' }}>
           <div
@@ -442,9 +441,17 @@ export default function LandingPage() {
       </footer>
 
       <style>{`
-        @media (max-width: 900px) {
-          #preview { grid-template-columns: 1fr !important; }
-          #preview > div:nth-child(2) { margin-left: 0 !important; }
+        @media (max-width: 768px) {
+          #preview { 
+            grid-template-columns: 1fr !important;
+            padding-top: 80px !important;
+            padding-bottom: 80px !important;
+          }
+          #preview > div:nth-child(2) { 
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+          }
         }
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
