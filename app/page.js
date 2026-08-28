@@ -47,7 +47,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#FFFCFA] text-[#17181C] antialiased selection:bg-[#FF7A45]/20">
       {/* Ambient light */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <div className="pointer-events-none fixed inset-0 -z-10" style={{overflow: 'hidden', width: '100vw', left: 0}}>
         <div className="absolute -top-48 -left-40 w-[38rem] h-[38rem] rounded-full bg-[#FF9A62]/25 blur-[140px]" />
         <div className="absolute top-20 -right-32 w-[30rem] h-[30rem] rounded-full bg-[#8B7CF6]/15 blur-[130px]" />
         <div className="absolute bottom-0 left-1/3 w-[26rem] h-[26rem] rounded-full bg-[#FF6B6B]/10 blur-[120px]" />

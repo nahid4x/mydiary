@@ -114,3 +114,7 @@ body {
     max-width: calc(100% - 32px) !important;
   }
 }
+html {
+  overflow-x: hidden !important;
+  position: relative;
+}
