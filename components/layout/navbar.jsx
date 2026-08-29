@@ -109,7 +109,7 @@ export function AppNavbar() {
 
       <h1
         className="font-serif font-semibold text-[#17181C] tracking-tight truncate flex-1 min-w-0"
-        style={{ fontSize: 'clamp(13px, 2.8vw, 17px)' }}
+        style={{ fontSize: '10px', color: 'red' }}
       >
         {pageTitle}
       </h1>
@@ -128,20 +128,20 @@ export function AppNavbar() {
         </Button>
       </Link>
 
-      <div className="shrink-0">
+      <div className="shrink-0 scale-90 md:scale-100">
         <NotificationBell />
       </div>
 
       <Link href="/profile" className="shrink-0">
         <div
-          className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-[13px] transition-transform duration-300 hover:scale-105"
+          className="w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-white font-semibold text-[12px] md:text-[13px] transition-transform duration-300 hover:scale-105"
           style={{
             background: session?.user?.avatar ? 'transparent' : 'linear-gradient(135deg,#FF7A45,#FF9A62)',
             boxShadow: '0 0 0 2px #FFFFFF, 0 0 0 3px #ECE8DF',
           }}
         >
           {session?.user?.avatar ? (
-            <img src={session.user.avatar} alt="" className="w-9 h-9 rounded-full object-cover" />
+            <img src={session.user.avatar} alt="" className="w-full h-full rounded-full object-cover" />
           ) : (
             session?.user?.name?.[0]?.toUpperCase() || 'U'
           )}
