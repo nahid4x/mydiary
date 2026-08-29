@@ -21,8 +21,7 @@ function timeAgo(dateStr) {
   if (mins < 60) return `${mins}m ago`
   const hrs = Math.floor(mins / 60)
   if (hrs < 24) return `${hrs}h ago`
-  const days = Math.floor(hrs / 24)
-  return `${days}d ago`
+  return `${Math.floor(hrs / 24)}d ago`
 }
 
 export function NotificationBell() {
@@ -30,7 +29,9 @@ export function NotificationBell() {
   const [notifications, setNotifications] = useState([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(true)
-  const ref = useRef(null)
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 })
+  const buttonRef = useRef(null)
+  const dropdownRef = useRef(null)
 
   async function load() {
     try {
@@ -38,54 +39,52 @@ export function NotificationBell() {
       const data = await res.json()
       setNotifications(data.notifications || [])
       setUnreadCount(data.unreadCount || 0)
-    } catch {
-      // fail silently, bell just shows no badge
-    } finally {
-      setLoading(false)
-    }
+    } catch {}
+    finally { setLoading(false) }
   }
 
-  useEffect(() => {
-    load()
-    const interval = setInterval(load, 30000)
-    return () => clearInterval(interval)
-  }, [])
+  useEffect(() => { load(); const i = setInterval(load, 30000); return () => clearInterval(i) }, [])
 
   useEffect(() => {
     function handleClickOutside(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+      if (
+        buttonRef.current && !buttonRef.current.contains(e.target) &&
+        dropdownRef.current && !dropdownRef.current.contains(e.target)
+      ) setOpen(false)
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  async function markOneRead(id) {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
-    setUnreadCount((c) => Math.max(0, c - 1))
-    try {
-      await fetch(`/api/notifications/${id}/read`, { method: 'POST' })
-    } catch {
-      load()
+  function handleOpen() {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect()
+      setDropdownPos({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right,
+      })
     }
+    setOpen((o) => !o)
+  }
+
+  async function markOneRead(id) {
+    setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, read: true } : n))
+    setUnreadCount((c) => Math.max(0, c - 1))
+    try { await fetch(`/api/notifications/${id}/read`, { method: 'POST' }) } catch { load() }
   }
 
   async function markAllRead() {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
     setUnreadCount(0)
-    try {
-      await fetch('/api/notifications/read-all', { method: 'POST' })
-    } catch {
-      load()
-    }
+    try { await fetch('/api/notifications/read-all', { method: 'POST' }) } catch { load() }
   }
 
-  const badgeLabel = unreadCount > 9 ? '9+' : String(unreadCount)
-
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative">
       <button
-        onClick={() => setOpen((o) => !o)}
-        className="relative w-9 h-9 rounded-xl flex items-center justify-center bg-white border border-[#E8ECF3] text-[#3A3D45] transition-colors duration-300 hover:bg-[#FFF7F2]"
+        ref={buttonRef}
+        onClick={handleOpen}
+        className="relative w-9 h-9 rounded-xl flex items-center justify-center bg-white border border-[#E8ECF3] text-[#3A3D45] hover:bg-[#FFF7F2] transition-colors"
         aria-label="Notifications"
       >
         <Bell className="w-[17px] h-[17px]" strokeWidth={1.85} />
@@ -94,7 +93,7 @@ export function NotificationBell() {
             className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-semibold text-white flex items-center justify-center"
             style={{ background: 'linear-gradient(135deg,#FF7A45,#FF9A62)' }}
           >
-            {badgeLabel}
+            {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </button>
@@ -102,26 +101,25 @@ export function NotificationBell() {
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={dropdownRef}
             initial={{ opacity: 0, y: -6, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.97 }}
             transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute mt-2 max-h-[420px] overflow-y-auto bg-white rounded-2xl border border-[#ECE8DF] shadow-xl"
-            style={{ 
-               width: '320px',
-                right: '-8px',
-                     zIndex: 99999,
-                  position: 'fixed',
-                 top: '60px',
-                   }}
+            style={{
+              position: 'fixed',
+              top: dropdownPos.top,
+              right: dropdownPos.right,
+              width: 'min(320px, calc(100vw - 16px))',
+              maxHeight: '420px',
+              zIndex: 99999,
+            }}
+            className="overflow-y-auto bg-white rounded-2xl border border-[#ECE8DF] shadow-xl"
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-[#ECE8DF]">
               <p className="font-serif font-semibold text-[15px] text-[#17181C]">Notifications</p>
               {unreadCount > 0 && (
-                <button
-                  onClick={markAllRead}
-                  className="text-[12px] font-medium text-[#FF7A45] hover:underline"
-                >
+                <button onClick={markAllRead} className="text-[12px] font-medium text-[#FF7A45] hover:underline">
                   Mark all as read
                 </button>
               )}
@@ -139,7 +137,7 @@ export function NotificationBell() {
                 const Icon = TYPE_ICONS[n.type] || Bell
                 const content = (
                   <div
-                    className={`flex gap-3 px-4 py-3 transition-colors duration-200 cursor-pointer ${
+                    className={`flex gap-3 px-4 py-3 transition-colors cursor-pointer ${
                       n.read ? 'hover:bg-[#FAF7F2]' : 'bg-[#FFF7F2] hover:bg-[#FFF1E8]'
                     }`}
                     onClick={() => !n.read && markOneRead(n.id)}
@@ -158,16 +156,12 @@ export function NotificationBell() {
                   </div>
                 )
                 return n.link ? (
-                  <Link key={n.id} href={n.link} onClick={() => setOpen(false)}>
-                    {content}
-                  </Link>
+                  <Link key={n.id} href={n.link} onClick={() => setOpen(false)}>{content}</Link>
                 ) : (
                   <div key={n.id}>{content}</div>
                 )
               })}
             </div>
-
-           
           </motion.div>
         )}
       </AnimatePresence>
