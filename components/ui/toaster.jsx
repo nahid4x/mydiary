@@ -22,7 +22,7 @@ export function Toaster() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+    <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none" style={{ width: 'min(360px, calc(100vw - 32px))' }}>
       <AnimatePresence>
         {toasts.map((toast) => (
           <motion.div
