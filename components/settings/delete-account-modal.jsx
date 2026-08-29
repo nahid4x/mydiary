@@ -46,28 +46,27 @@ export function DeleteAccountModal({ open, onClose, onScheduled }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{alignItems: 'center', justifyContent: 'center'}}>
-      <div style={{ width: '400px', maxWidth: 'calc(100vw - 32px)', margin: '0 auto', position: 'relative' }} className="bg-white rounded-[20px] border border-[#ECE8DF] shadow-2xl p-5"></div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+      {/* Overlay */}
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Modal — fixed width, centered, not full-width */}
-      <div style={{ width: '100%', maxWidth: '400px', margin: '0 auto' }} className="relative bg-white rounded-[20px] border border-[#ECE8DF] shadow-2xl p-5">
-        
-        {/* Header */}
+      {/* Modal */}
+      <div className="relative z-10 bg-white rounded-[20px] border border-[#ECE8DF] shadow-2xl p-5" style={{ width: '100%', maxWidth: '400px' }}>
         <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4.5 h-4.5 text-red-500 shrink-0" />
+            <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
             <h2 className="font-serif font-semibold text-[17px] text-[#17181C]">Delete your account?</h2>
           </div>
           <button onClick={onClose} className="text-[#8A8E96] hover:text-[#3A3D45] ml-2 shrink-0">
             <X className="w-4 h-4" />
           </button>
         </div>
+
         <p className="text-[12.5px] text-[#8A8E96] mb-4 leading-relaxed">
           Your account will be scheduled for deletion in 7 days. You can cancel anytime before then.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
-          {/* Reason */}
           <div className="space-y-1">
             <label className="text-[12.5px] font-medium text-[#3A3D45]">Why are you leaving?</label>
             <select
@@ -82,7 +81,6 @@ export function DeleteAccountModal({ open, onClose, onScheduled }) {
             </select>
           </div>
 
-          {/* Optional feedback */}
           {reason === 'other' && (
             <div className="space-y-1">
               <label className="text-[12.5px] font-medium text-[#3A3D45]">Additional feedback</label>
@@ -95,7 +93,6 @@ export function DeleteAccountModal({ open, onClose, onScheduled }) {
             </div>
           )}
 
-          {/* Password */}
           <div className="space-y-1">
             <label className="text-[12.5px] font-medium text-[#3A3D45]">Confirm your password</label>
             <input
@@ -107,11 +104,10 @@ export function DeleteAccountModal({ open, onClose, onScheduled }) {
             />
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={submitting}
-            className="w-full h-10 rounded-xl font-semibold text-[13.5px] text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-60 flex items-center justify-center gap-2 mt-1"
+            className="w-full h-10 rounded-xl font-semibold text-[13.5px] text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
           >
             {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             {submitting ? 'Scheduling...' : 'Schedule Account Deletion'}
