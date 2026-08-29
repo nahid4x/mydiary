@@ -46,8 +46,8 @@ export function DeleteAccountModal({ open, onClose, onScheduled }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-[#17181C]/40 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{alignItems: 'center', justifyContent: 'center'}}>
+      <div style={{ width: '400px', maxWidth: 'calc(100vw - 32px)', margin: '0 auto', position: 'relative' }} className="bg-white rounded-[20px] border border-[#ECE8DF] shadow-2xl p-5"></div>
 
       {/* Modal — fixed width, centered, not full-width */}
       <div style={{ width: '100%', maxWidth: '400px', margin: '0 auto' }} className="relative bg-white rounded-[20px] border border-[#ECE8DF] shadow-2xl p-5">
