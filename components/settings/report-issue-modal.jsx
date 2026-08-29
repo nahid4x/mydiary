@@ -126,10 +126,14 @@ export function ReportIssueModal({ open, onClose, onSubmitted }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-[#17181C]/40 backdrop-blur-sm" onClick={onClose} />
+      {/* Overlay */}
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-sm bg-white rounded-[20px] border border-[#ECE8DF] shadow-2xl mx-auto flex flex-col" style={{ maxHeight: '90vh' }}>
-        
+      {/* Modal */}
+      <div
+        className="relative z-10 bg-white rounded-[20px] border border-[#ECE8DF] shadow-2xl flex flex-col"
+        style={{ width: '100%', maxWidth: '420px', maxHeight: '90vh' }}
+      >
         {/* Fixed header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-[#F1EFE9] shrink-0">
           <h2 className="font-serif font-semibold text-[17px] text-[#17181C]">Report an Issue</h2>
@@ -141,7 +145,6 @@ export function ReportIssueModal({ open, onClose, onSubmitted }) {
         {/* Scrollable body */}
         <div className="overflow-y-auto px-5 py-4 space-y-3.5 flex-1">
 
-          {/* Category */}
           <div className="space-y-1">
             <label className="text-[12.5px] font-medium text-[#3A3D45]">Category</label>
             <select
@@ -157,7 +160,6 @@ export function ReportIssueModal({ open, onClose, onSubmitted }) {
             {errors.category && <p className="text-xs text-red-500">{errors.category.message}</p>}
           </div>
 
-          {/* Subject */}
           <div className="space-y-1">
             <label className="text-[12.5px] font-medium text-[#3A3D45]">Subject</label>
             <Input
@@ -169,7 +171,6 @@ export function ReportIssueModal({ open, onClose, onSubmitted }) {
             {errors.subject && <p className="text-xs text-red-500">{errors.subject.message}</p>}
           </div>
 
-          {/* Description */}
           <div className="space-y-1">
             <label className="text-[12.5px] font-medium text-[#3A3D45]">Description</label>
             <Textarea
@@ -180,7 +181,6 @@ export function ReportIssueModal({ open, onClose, onSubmitted }) {
             {errors.description && <p className="text-xs text-red-500">{errors.description.message}</p>}
           </div>
 
-          {/* Steps to reproduce */}
           <div className="space-y-1">
             <label className="text-[12.5px] font-medium text-[#3A3D45]">
               Steps to reproduce <span className="text-[#B0B4BB] font-normal">(optional)</span>
@@ -192,7 +192,6 @@ export function ReportIssueModal({ open, onClose, onSubmitted }) {
             />
           </div>
 
-          {/* Attachments */}
           <div className="space-y-1">
             <label className="text-[12.5px] font-medium text-[#3A3D45]">
               Attachments <span className="text-[#B0B4BB] font-normal">(optional)</span>
@@ -242,14 +241,13 @@ export function ReportIssueModal({ open, onClose, onSubmitted }) {
             )}
           </div>
 
-          {/* Contact permission */}
           <label className="flex items-center gap-2 text-[12.5px] text-[#3A3D45] cursor-pointer">
             <input type="checkbox" {...register('contactPermission')} className="rounded border-[#ECE8DF]" />
             Allow MyDiary support to contact me about this issue.
           </label>
         </div>
 
-        {/* Fixed footer button */}
+        {/* Fixed footer */}
         <div className="px-5 pb-5 pt-3 border-t border-[#F1EFE9] shrink-0">
           <button
             type="button"
