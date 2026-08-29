@@ -11,27 +11,31 @@ export function ConfirmDialog({ open, onClose, onConfirm, title, description, co
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Overlay — must be fixed not absolute */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-[#17181C]/40 backdrop-blur-sm"
+            className="fixed inset-0 bg-[#17181C]/40 backdrop-blur-sm"
             onClick={onClose}
           />
+          {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.96, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 10 }}
             transition={{ duration: 0.25, ease: easing }}
-            className="relative bg-white rounded-[24px] p-7 w-full max-w-sm"
+            className="relative z-10 bg-white rounded-[24px] p-7"
             style={{
+              width: '100%',
+              maxWidth: '400px',
               border: '1px solid #ECE8DF',
               boxShadow: '0 30px 70px -20px rgba(23,24,28,0.25)',
             }}
           >
             <div className="flex flex-col items-center text-center gap-3">
               <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
-                <AlertTriangle className="w-5.5 h-5.5 text-red-500" strokeWidth={1.75} />
+                <AlertTriangle className="w-5 h-5 text-red-500" strokeWidth={1.75} />
               </div>
               <div>
                 <h2 className="text-[17px] font-serif font-semibold text-[#17181C]">{title}</h2>
