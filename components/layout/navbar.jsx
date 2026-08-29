@@ -107,7 +107,7 @@ export function AppNavbar() {
         {mobileOpen ? <X className="w-[18px] h-[18px]" strokeWidth={1.85} /> : <Menu className="w-[18px] h-[18px]" strokeWidth={1.85} />}
       </button>
 
-      <h1 className="font-serif font-semibold text-[#17181C] tracking-tight truncate" style={{ fontSize: 'clamp(13px, 3.5vw, 19px)' }}>
+      <h1 className="font-serif font-semibold text-[#17181C] tracking-tight truncate" style={{ fontSize: 'clamp(10px, 3.5vw, 15px)' }}>
   {pageTitle}
     </h1>
       <Link href="/entries/new">
