@@ -50,7 +50,7 @@ export function DeleteAccountModal({ open, onClose, onScheduled }) {
       <div className="absolute inset-0 bg-[#17181C]/40 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal — fixed width, centered, not full-width */}
-      <div className="relative w-full max-w-sm bg-white rounded-[20px] border border-[#ECE8DF] shadow-2xl p-5 mx-auto">
+      <div style={{ width: '100%', maxWidth: '400px', margin: '0 auto' }} className="relative bg-white rounded-[20px] border border-[#ECE8DF] shadow-2xl p-5">
         
         {/* Header */}
         <div className="flex items-center justify-between mb-1.5">
