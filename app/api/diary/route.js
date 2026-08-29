@@ -15,10 +15,13 @@ export async function GET(req) {
   const sort = searchParams.get('sort') || 'newest'
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '12')
+  const favorite = searchParams.get('favorite') === 'true'
+  const archived = searchParams.get('archived') === 'true'
 
   const where = {
-    privacy: 'public',
-    isArchived: false,
+    userId: session.user.id,        // ← THE FIX: scope to logged-in user
+    isArchived: archived,           // ← false by default, true for archive page
+    ...(favorite && { isFavorite: true }),  // ← filter favorites
     ...(mood && { mood }),
     ...(search && {
       OR: [
