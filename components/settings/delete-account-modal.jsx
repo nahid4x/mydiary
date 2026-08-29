@@ -23,15 +23,8 @@ export function DeleteAccountModal({ open, onClose, onScheduled }) {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (!reason) {
-      toast({ title: 'Please select a reason', variant: 'error' })
-      return
-    }
-    if (!password) {
-      toast({ title: 'Please enter your password', variant: 'error' })
-      return
-    }
-
+    if (!reason) { toast({ title: 'Please select a reason', variant: 'error' }); return }
+    if (!password) { toast({ title: 'Please enter your password', variant: 'error' }); return }
     setSubmitting(true)
     try {
       const res = await fetch('/api/account/delete', {
@@ -41,12 +34,9 @@ export function DeleteAccountModal({ open, onClose, onScheduled }) {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-
       toast({ title: 'Account deletion scheduled', variant: 'success' })
       onScheduled?.(data.scheduledDeletionDate)
-      setReason('')
-      setFeedback('')
-      setPassword('')
+      setReason(''); setFeedback(''); setPassword('')
       onClose()
     } catch (err) {
       toast({ title: err.message || 'Failed to schedule deletion', variant: 'error' })
@@ -56,30 +46,34 @@ export function DeleteAccountModal({ open, onClose, onScheduled }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-[#17181C]/40 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-md bg-white rounded-[22px] border border-[#ECE8DF] shadow-2xl p-6">
-        <div className="flex items-center justify-between mb-2">
+      {/* Modal — fixed width, centered, not full-width */}
+      <div className="relative w-full max-w-sm bg-white rounded-[20px] border border-[#ECE8DF] shadow-2xl p-5 mx-auto">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-red-500" />
-            <h2 className="font-serif font-semibold text-[19px] text-[#17181C]">Delete your account?</h2>
+            <AlertTriangle className="w-4.5 h-4.5 text-red-500 shrink-0" />
+            <h2 className="font-serif font-semibold text-[17px] text-[#17181C]">Delete your account?</h2>
           </div>
-          <button onClick={onClose} className="text-[#8A8E96] hover:text-[#3A3D45]" aria-label="Close">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="text-[#8A8E96] hover:text-[#3A3D45] ml-2 shrink-0">
+            <X className="w-4 h-4" />
           </button>
         </div>
-        <p className="text-[13px] text-[#8A8E96] mb-5">
+        <p className="text-[12.5px] text-[#8A8E96] mb-4 leading-relaxed">
           Your account will be scheduled for deletion in 7 days. You can cancel anytime before then.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-[13px] font-medium text-[#3A3D45]">Why are you leaving?</label>
+        <form onSubmit={handleSubmit} className="space-y-3.5">
+          {/* Reason */}
+          <div className="space-y-1">
+            <label className="text-[12.5px] font-medium text-[#3A3D45]">Why are you leaving?</label>
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full h-11 rounded-xl border border-[#ECE8DF] text-[14px] px-3 outline-none focus:border-red-300 focus:ring-4 focus:ring-red-100 transition-all duration-300 bg-white"
+              className="w-full h-10 rounded-xl border border-[#ECE8DF] text-[13.5px] px-3 outline-none focus:border-red-300 focus:ring-2 focus:ring-red-100 transition-all bg-white"
             >
               <option value="" disabled>Select a reason</option>
               {REASONS.map(([val, label]) => (
@@ -88,35 +82,38 @@ export function DeleteAccountModal({ open, onClose, onScheduled }) {
             </select>
           </div>
 
+          {/* Optional feedback */}
           {reason === 'other' && (
-            <div className="space-y-1.5">
-              <label className="text-[13px] font-medium text-[#3A3D45]">Additional feedback</label>
+            <div className="space-y-1">
+              <label className="text-[12.5px] font-medium text-[#3A3D45]">Additional feedback</label>
               <textarea
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
                 placeholder="Tell us more..."
-                className="w-full min-h-[80px] rounded-xl border border-[#ECE8DF] text-[14px] p-3 outline-none focus:border-red-300 focus:ring-4 focus:ring-red-100 transition-all duration-300"
+                className="w-full min-h-[70px] rounded-xl border border-[#ECE8DF] text-[13.5px] p-3 outline-none focus:border-red-300 focus:ring-2 focus:ring-red-100 transition-all resize-none"
               />
             </div>
           )}
 
-          <div className="space-y-1.5">
-            <label className="text-[13px] font-medium text-[#3A3D45]">Confirm your password</label>
+          {/* Password */}
+          <div className="space-y-1">
+            <label className="text-[12.5px] font-medium text-[#3A3D45]">Confirm your password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              className="w-full h-11 rounded-xl border border-[#ECE8DF] text-[14px] px-3 outline-none focus:border-red-300 focus:ring-4 focus:ring-red-100 transition-all duration-300"
+              className="w-full h-10 rounded-xl border border-[#ECE8DF] text-[13.5px] px-3 outline-none focus:border-red-300 focus:ring-2 focus:ring-red-100 transition-all"
             />
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             disabled={submitting}
-            className="w-full h-11 rounded-xl font-semibold border-0 text-white bg-red-500 hover:bg-red-600 transition-colors duration-300 disabled:opacity-60 flex items-center justify-center gap-2"
+            className="w-full h-10 rounded-xl font-semibold text-[13.5px] text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-60 flex items-center justify-center gap-2 mt-1"
           >
-            {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+            {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             {submitting ? 'Scheduling...' : 'Schedule Account Deletion'}
           </button>
         </form>
