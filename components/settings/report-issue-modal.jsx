@@ -25,14 +25,12 @@ const CATEGORY_OPTIONS = [
   ['OTHER', 'Other'],
 ]
 
-const PRIORITY_OPTIONS = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']
-
 const ACCEPTED_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'application/pdf']
 const MAX_FILE_MB = 10
 
 export function ReportIssueModal({ open, onClose, onSubmitted }) {
   const [saving, setSaving] = useState(false)
-  const [files, setFiles] = useState([]) // { file, previewUrl, uploading, uploadedUrl }
+  const [files, setFiles] = useState([])
   const [dragOver, setDragOver] = useState(false)
   const fileInputRef = useRef(null)
 
@@ -99,7 +97,6 @@ export function ReportIssueModal({ open, onClose, onSubmitted }) {
     setSaving(true)
     try {
       const attachments = files.length ? await uploadAllFiles() : []
-
       const deviceInfo = {
         browser: navigator.userAgent,
         os: navigator.platform,
@@ -108,15 +105,13 @@ export function ReportIssueModal({ open, onClose, onSubmitted }) {
         language: navigator.language,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       }
-
-   const res = await fetch('/api/tickets',  {
+      const res = await fetch('/api/tickets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...values, ...deviceInfo, attachments }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-
       toast({ title: `Report submitted — ${data.ticket.ticketNumber}`, variant: 'success' })
       onSubmitted?.(data.ticket)
       reset()
@@ -130,24 +125,29 @@ export function ReportIssueModal({ open, onClose, onSubmitted }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-[#17181C]/40 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-[22px] border border-[#ECE8DF] shadow-2xl p-6">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="font-serif font-semibold text-[19px] text-[#17181C]">Report an Issue</h2>
-          <button onClick={onClose} className="text-[#8A8E96] hover:text-[#3A3D45]" aria-label="Close">
-            <X className="w-5 h-5" />
+      <div className="relative w-full max-w-sm bg-white rounded-[20px] border border-[#ECE8DF] shadow-2xl mx-auto flex flex-col" style={{ maxHeight: '90vh' }}>
+        
+        {/* Fixed header */}
+        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-[#F1EFE9] shrink-0">
+          <h2 className="font-serif font-semibold text-[17px] text-[#17181C]">Report an Issue</h2>
+          <button onClick={onClose} className="text-[#8A8E96] hover:text-[#3A3D45]">
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-[13px] font-medium text-[#3A3D45]">Category</label>
+        {/* Scrollable body */}
+        <div className="overflow-y-auto px-5 py-4 space-y-3.5 flex-1">
+
+          {/* Category */}
+          <div className="space-y-1">
+            <label className="text-[12.5px] font-medium text-[#3A3D45]">Category</label>
             <select
               {...register('category')}
               defaultValue=""
-              className="w-full h-11 rounded-xl border border-[#ECE8DF] text-[14px] px-3 focus:border-[#FF7A45]/50 focus:ring-4 focus:ring-[#FF7A45]/10 transition-all duration-300 bg-white"
+              className="w-full h-10 rounded-xl border border-[#ECE8DF] text-[13.5px] px-3 focus:border-[#FF7A45]/50 focus:ring-2 focus:ring-[#FF7A45]/10 transition-all bg-white outline-none"
             >
               <option value="" disabled>Select category</option>
               {CATEGORY_OPTIONS.map(([val, label]) => (
@@ -157,56 +157,60 @@ export function ReportIssueModal({ open, onClose, onSubmitted }) {
             {errors.category && <p className="text-xs text-red-500">{errors.category.message}</p>}
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-[13px] font-medium text-[#3A3D45]">Subject</label>
+          {/* Subject */}
+          <div className="space-y-1">
+            <label className="text-[12.5px] font-medium text-[#3A3D45]">Subject</label>
             <Input
               {...register('subject')}
               placeholder="Short summary of the issue"
               error={!!errors.subject}
-              className="h-11 rounded-xl border-[#ECE8DF] text-[14px] focus:border-[#FF7A45]/50 focus:ring-4 focus:ring-[#FF7A45]/10 transition-all duration-300"
+              className="h-10 rounded-xl border-[#ECE8DF] text-[13.5px]"
             />
             {errors.subject && <p className="text-xs text-red-500">{errors.subject.message}</p>}
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-[13px] font-medium text-[#3A3D45]">Description</label>
+          {/* Description */}
+          <div className="space-y-1">
+            <label className="text-[12.5px] font-medium text-[#3A3D45]">Description</label>
             <Textarea
               {...register('description')}
-              placeholder="Please describe the issue in as much detail as possible..."
-              className="min-h-[100px] rounded-xl border-[#ECE8DF] text-[14px] focus:border-[#FF7A45]/50 focus:ring-4 focus:ring-[#FF7A45]/10 transition-all duration-300"
+              placeholder="Describe the issue in detail..."
+              className="min-h-[80px] rounded-xl border-[#ECE8DF] text-[13.5px] resize-none"
             />
             {errors.description && <p className="text-xs text-red-500">{errors.description.message}</p>}
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-[13px] font-medium text-[#3A3D45]">Steps to reproduce <span className="text-[#B0B4BB] font-normal">(optional)</span></label>
+          {/* Steps to reproduce */}
+          <div className="space-y-1">
+            <label className="text-[12.5px] font-medium text-[#3A3D45]">
+              Steps to reproduce <span className="text-[#B0B4BB] font-normal">(optional)</span>
+            </label>
             <Textarea
               {...register('stepsToReproduce')}
               placeholder="1. Go to...&#10;2. Click on...&#10;3. See error"
-              className="min-h-[70px] rounded-xl border-[#ECE8DF] text-[14px] focus:border-[#FF7A45]/50 focus:ring-4 focus:ring-[#FF7A45]/10 transition-all duration-300"
+              className="min-h-[60px] rounded-xl border-[#ECE8DF] text-[13.5px] resize-none"
             />
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-[13px] font-medium text-[#3A3D45]">Attachments <span className="text-[#B0B4BB] font-normal">(optional)</span></label>
+          {/* Attachments */}
+          <div className="space-y-1">
+            <label className="text-[12.5px] font-medium text-[#3A3D45]">
+              Attachments <span className="text-[#B0B4BB] font-normal">(optional)</span>
+            </label>
             <div
               onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
               onDragLeave={() => setDragOver(false)}
-              onDrop={(e) => {
-                e.preventDefault()
-                setDragOver(false)
-                addFiles(e.dataTransfer.files)
-              }}
+              onDrop={(e) => { e.preventDefault(); setDragOver(false); addFiles(e.dataTransfer.files) }}
               onClick={() => fileInputRef.current?.click()}
-              className={`rounded-xl border-2 border-dashed p-5 text-center cursor-pointer transition-colors duration-300 ${
+              className={`rounded-xl border-2 border-dashed p-4 text-center cursor-pointer transition-colors ${
                 dragOver ? 'border-[#FF7A45] bg-[#FF7A45]/5' : 'border-[#ECE8DF] hover:border-[#FF7A45]/40'
               }`}
             >
-              <UploadCloud className="w-6 h-6 mx-auto text-[#B0B4BB] mb-1.5" />
-              <p className="text-[13px] text-[#8A8E96]">
-                Drag & drop, or <span className="text-[#FF7A45] font-medium">browse</span>
+              <UploadCloud className="w-5 h-5 mx-auto text-[#B0B4BB] mb-1" />
+              <p className="text-[12.5px] text-[#8A8E96]">
+                Drag & drop or <span className="text-[#FF7A45] font-medium">browse</span>
               </p>
-              <p className="text-[11px] text-[#B0B4BB] mt-0.5">PNG, JPG, WEBP, PDF · up to {MAX_FILE_MB}MB each</p>
+              <p className="text-[11px] text-[#B0B4BB] mt-0.5">PNG, JPG, WEBP, PDF · up to {MAX_FILE_MB}MB</p>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -218,20 +222,19 @@ export function ReportIssueModal({ open, onClose, onSubmitted }) {
             </div>
 
             {files.length > 0 && (
-              <div className="grid grid-cols-3 gap-2 pt-2">
+              <div className="grid grid-cols-3 gap-2 pt-1">
                 {files.map((f, idx) => (
-                  <div key={idx} className="relative rounded-lg border border-[#ECE8DF] overflow-hidden h-20 bg-[#F5F2EA] flex items-center justify-center">
-                    {f.previewUrl ? (
-                      <img src={f.previewUrl} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <FileText className="w-6 h-6 text-[#8A8E96]" />
-                    )}
+                  <div key={idx} className="relative rounded-lg border border-[#ECE8DF] overflow-hidden h-16 bg-[#F5F2EA] flex items-center justify-center">
+                    {f.previewUrl
+                      ? <img src={f.previewUrl} alt="" className="w-full h-full object-cover" />
+                      : <FileText className="w-5 h-5 text-[#8A8E96]" />
+                    }
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); removeFile(idx) }}
-                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#17181C]/60 text-white flex items-center justify-center"
+                      className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#17181C]/60 text-white flex items-center justify-center"
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="w-2.5 h-2.5" />
                     </button>
                   </div>
                 ))}
@@ -239,24 +242,25 @@ export function ReportIssueModal({ open, onClose, onSubmitted }) {
             )}
           </div>
 
-          <label className="flex items-center gap-2 text-[13px] text-[#3A3D45]">
+          {/* Contact permission */}
+          <label className="flex items-center gap-2 text-[12.5px] text-[#3A3D45] cursor-pointer">
             <input type="checkbox" {...register('contactPermission')} className="rounded border-[#ECE8DF]" />
-            Allow MyDiary support to contact me regarding this issue.
+            Allow MyDiary support to contact me about this issue.
           </label>
+        </div>
 
-          <Button
+        {/* Fixed footer button */}
+        <div className="px-5 pb-5 pt-3 border-t border-[#F1EFE9] shrink-0">
+          <button
             type="button"
             onClick={handleSubmit(onSubmit)}
             disabled={saving}
-            className="w-full gap-2 h-11 rounded-xl font-semibold border-0 text-white transition-all duration-300 disabled:opacity-60"
-            style={{
-              background: 'linear-gradient(135deg,#FF7A45,#FF9A62)',
-              boxShadow: '0 8px 20px -6px rgba(255,122,69,0.4)',
-            }}
+            className="w-full h-10 rounded-xl font-semibold text-[13.5px] text-white transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+            style={{ background: 'linear-gradient(135deg,#FF7A45,#FF9A62)', boxShadow: '0 8px 20px -6px rgba(255,122,69,0.4)' }}
           >
-            {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+            {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             {saving ? 'Submitting...' : 'Submit Report'}
-          </Button>
+          </button>
         </div>
       </div>
     </div>
