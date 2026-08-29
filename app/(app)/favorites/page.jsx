@@ -22,15 +22,22 @@ function DiaryCardSkeleton() {
 export default function FavoritesPage() {
   const [diaries, setDiaries] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [deleting, setDeleting] = useState(false)
 
   const fetchFavorites = useCallback(async () => {
     setLoading(true)
+    setError(null)
     try {
       const res = await fetch('/api/diary?favorite=true&limit=50')
+      if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
-      setDiaries(data.diaries || [])
+      // Only keep entries where isFavorite is explicitly true
+      const favorites = (data.diaries || []).filter((d) => d.isFavorite === true)
+      setDiaries(favorites)
+    } catch (err) {
+      setError('Unable to load your favorites. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -39,10 +46,11 @@ export default function FavoritesPage() {
   useEffect(() => { fetchFavorites() }, [fetchFavorites])
 
   function handleUpdate(updated) {
-    // If un-favorited, remove from this list
     if (!updated.isFavorite) {
+      // Unfavorited — remove immediately from list
       setDiaries((prev) => prev.filter((d) => d.id !== updated.id))
     } else {
+      // Still favorited — update in place
       setDiaries((prev) => prev.map((d) => (d.id === updated.id ? updated : d)))
     }
   }
@@ -51,7 +59,8 @@ export default function FavoritesPage() {
     if (!deleteTarget) return
     setDeleting(true)
     try {
-      await fetch(`/api/diary/${deleteTarget.id}`, { method: 'DELETE' })
+      const res = await fetch(`/api/diary/${deleteTarget.id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error()
       setDiaries((prev) => prev.filter((d) => d.id !== deleteTarget.id))
       toast({ title: 'Entry deleted', variant: 'success' })
     } catch {
@@ -66,14 +75,26 @@ export default function FavoritesPage() {
     <div className="space-y-7">
       <div>
         <h1 className="text-3xl font-serif font-semibold text-[#17181C] tracking-tight">Favorites</h1>
-        <p className="text-[13.5px] text-[#8A8E96] mt-1">
-          {!loading && `${diaries.length} starred ${diaries.length === 1 ? 'entry' : 'entries'}`}
-        </p>
+        {!loading && !error && (
+          <p className="text-[13.5px] text-[#8A8E96] mt-1">
+            {diaries.length} starred {diaries.length === 1 ? 'entry' : 'entries'}
+          </p>
+        )}
       </div>
 
       {loading ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => <DiaryCardSkeleton key={i} />)}
+        </div>
+      ) : error ? (
+        <div className="bg-white/60 rounded-[20px] border border-[#ECE8DF] p-10 text-center">
+          <p className="text-[#8A8E96] text-[14px]">{error}</p>
+          <button
+            onClick={fetchFavorites}
+            className="mt-4 text-[13px] text-[#FF7A45] hover:underline font-medium"
+          >
+            Try again
+          </button>
         </div>
       ) : diaries.length === 0 ? (
         <EmptyState
