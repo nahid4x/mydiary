@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -33,10 +33,10 @@ function MetaButton({ active, onClick, children }) {
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-1.5 h-8 px-3 rounded-xl border text-[12px] transition-all duration-300 ${
+      className={`flex items-center gap-1.5 h-8 px-3 rounded-xl border text-[12px] font-medium transition-all duration-300 ${
         active
           ? 'border-[#FF7A45]/25 bg-[#FFF1E8] text-[#FF7A45]'
-          : 'border-[#ECE8DF] text-[#6B6F78] hover:border-[#FF7A45]/25 hover:text-[#17181C]'
+          : 'border-[#E4E0D5] bg-[#FAF9F6] text-[#6B6F78] hover:border-[#FF7A45]/25 hover:bg-white hover:text-[#17181C]'
       }`}
     >
       {children}
@@ -47,6 +47,7 @@ function MetaButton({ active, onClick, children }) {
 export function DiaryForm({ initialData, isEdit }) {
   const router = useRouter()
   const fileRef = useRef(null)
+  const metaRef = useRef(null)
 
   const [imagePreview, setImagePreview] = useState(initialData?.image || null)
   const [imageUrl, setImageUrl] = useState(initialData?.image || null)
@@ -94,6 +95,18 @@ export function DiaryForm({ initialData, isEdit }) {
 
   const contentValue = watch('content')
   const wordCount = contentValue ? contentValue.trim().split(/\s+/).filter(Boolean).length : 0
+
+  // Close Mood / Weather dropdowns when clicking outside either of them
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (metaRef.current && !metaRef.current.contains(e.target)) {
+        setShowMoodPicker(false)
+        setShowWeatherPicker(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   async function handleAiMode(mode) {
     setShowAiMenu(false)
@@ -214,82 +227,84 @@ export function DiaryForm({ initialData, isEdit }) {
           />
         </div>
 
-        <div className="relative">
-          <MetaButton active={!!selectedMood} onClick={() => { setShowMoodPicker(!showMoodPicker); setShowWeatherPicker(false) }}>
-            {selectedMood ? (
-              <>{MOODS.find((m) => m.value === selectedMood)?.emoji} {MOODS.find((m) => m.value === selectedMood)?.label}</>
-            ) : (
-              <>😊 Mood</>
-            )}
-            <ChevronDown className="w-3 h-3" strokeWidth={1.85} />
-          </MetaButton>
-          {showMoodPicker && (
-            <motion.div
-              initial={{ opacity: 0, y: -4, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.18, ease: easing }}
-              className="absolute top-10 left-0 z-20 bg-white border border-[#ECE8DF] rounded-2xl p-3 grid grid-cols-4 gap-1 w-56"
-              style={{ boxShadow: '0 24px 50px -16px rgba(23,24,28,0.2)' }}
-            >
-              <button
-                type="button"
-                onClick={() => { setSelectedMood(''); setShowMoodPicker(false) }}
-                className="col-span-4 text-[11.5px] text-[#B0B4BB] hover:text-[#6B6F78] pb-1.5 border-b border-[#F1EFE9] mb-1"
+        <div ref={metaRef} className="flex items-center gap-2.5">
+          <div className="relative">
+            <MetaButton active={!!selectedMood} onClick={() => { setShowMoodPicker(!showMoodPicker); setShowWeatherPicker(false) }}>
+              {selectedMood ? (
+                <>{MOODS.find((m) => m.value === selectedMood)?.emoji} {MOODS.find((m) => m.value === selectedMood)?.label}</>
+              ) : (
+                <>😊 Mood</>
+              )}
+              <ChevronDown className="w-3 h-3" strokeWidth={1.85} />
+            </MetaButton>
+            {showMoodPicker && (
+              <motion.div
+                initial={{ opacity: 0, y: -4, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.18, ease: easing }}
+                className="absolute top-10 left-0 z-20 bg-white border border-[#ECE8DF] rounded-2xl p-3 grid grid-cols-4 gap-1 w-56"
+                style={{ boxShadow: '0 24px 50px -16px rgba(23,24,28,0.2)' }}
               >
-                Clear mood
-              </button>
-              {MOODS.map((m) => (
                 <button
-                  key={m.value}
                   type="button"
-                  onClick={() => { setSelectedMood(m.value); setShowMoodPicker(false) }}
-                  title={m.label}
-                  className={`text-xl p-2 rounded-xl hover:bg-[#FFF1E8] transition-colors ${selectedMood === m.value ? 'bg-[#FFF1E8]' : ''}`}
+                  onClick={() => { setSelectedMood(''); setShowMoodPicker(false) }}
+                  className="col-span-4 text-[11.5px] text-[#B0B4BB] hover:text-[#6B6F78] pb-1.5 border-b border-[#F1EFE9] mb-1"
                 >
-                  {m.emoji}
+                  Clear mood
                 </button>
-              ))}
-            </motion.div>
-          )}
-        </div>
+                {MOODS.map((m) => (
+                  <button
+                    key={m.value}
+                    type="button"
+                    onClick={() => { setSelectedMood(m.value); setShowMoodPicker(false) }}
+                    title={m.label}
+                    className={`text-xl p-2 rounded-xl hover:bg-[#FFF1E8] transition-colors ${selectedMood === m.value ? 'bg-[#FFF1E8]' : ''}`}
+                  >
+                    {m.emoji}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </div>
 
-        <div className="relative">
-          <MetaButton active={!!selectedWeather} onClick={() => { setShowWeatherPicker(!showWeatherPicker); setShowMoodPicker(false) }}>
-            {selectedWeather ? (
-              <>{WEATHER_OPTIONS.find((w) => w.value === selectedWeather)?.emoji} {WEATHER_OPTIONS.find((w) => w.value === selectedWeather)?.label}</>
-            ) : (
-              <>☀️ Weather</>
-            )}
-            <ChevronDown className="w-3 h-3" strokeWidth={1.85} />
-          </MetaButton>
-          {showWeatherPicker && (
-            <motion.div
-              initial={{ opacity: 0, y: -4, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.18, ease: easing }}
-              className="absolute top-10 left-0 z-20 bg-white border border-[#ECE8DF] rounded-2xl p-3 grid grid-cols-4 gap-1 w-56"
-              style={{ boxShadow: '0 24px 50px -16px rgba(23,24,28,0.2)' }}
-            >
-              <button
-                type="button"
-                onClick={() => { setSelectedWeather(''); setShowWeatherPicker(false) }}
-                className="col-span-4 text-[11.5px] text-[#B0B4BB] hover:text-[#6B6F78] pb-1.5 border-b border-[#F1EFE9] mb-1"
+          <div className="relative">
+            <MetaButton active={!!selectedWeather} onClick={() => { setShowWeatherPicker(!showWeatherPicker); setShowMoodPicker(false) }}>
+              {selectedWeather ? (
+                <>{WEATHER_OPTIONS.find((w) => w.value === selectedWeather)?.emoji} {WEATHER_OPTIONS.find((w) => w.value === selectedWeather)?.label}</>
+              ) : (
+                <>☀️ Weather</>
+              )}
+              <ChevronDown className="w-3 h-3" strokeWidth={1.85} />
+            </MetaButton>
+            {showWeatherPicker && (
+              <motion.div
+                initial={{ opacity: 0, y: -4, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.18, ease: easing }}
+                className="absolute top-10 left-0 z-20 bg-white border border-[#ECE8DF] rounded-2xl p-3 grid grid-cols-4 gap-1 w-56"
+                style={{ boxShadow: '0 24px 50px -16px rgba(23,24,28,0.2)' }}
               >
-                Clear weather
-              </button>
-              {WEATHER_OPTIONS.map((w) => (
                 <button
-                  key={w.value}
                   type="button"
-                  onClick={() => { setSelectedWeather(w.value); setShowWeatherPicker(false) }}
-                  title={w.label}
-                  className={`text-xl p-2 rounded-xl hover:bg-[#FFF1E8] transition-colors ${selectedWeather === w.value ? 'bg-[#FFF1E8]' : ''}`}
+                  onClick={() => { setSelectedWeather(''); setShowWeatherPicker(false) }}
+                  className="col-span-4 text-[11.5px] text-[#B0B4BB] hover:text-[#6B6F78] pb-1.5 border-b border-[#F1EFE9] mb-1"
                 >
-                  {w.emoji}
+                  Clear weather
                 </button>
-              ))}
-            </motion.div>
-          )}
+                {WEATHER_OPTIONS.map((w) => (
+                  <button
+                    key={w.value}
+                    type="button"
+                    onClick={() => { setSelectedWeather(w.value); setShowWeatherPicker(false) }}
+                    title={w.label}
+                    className={`text-xl p-2 rounded-xl hover:bg-[#FFF1E8] transition-colors ${selectedWeather === w.value ? 'bg-[#FFF1E8]' : ''}`}
+                  >
+                    {w.emoji}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </div>
         </div>
 
         <MetaButton onClick={() => setPrivacy(privacy === 'private' ? 'public' : 'private')}>
