@@ -76,7 +76,7 @@ function Popover({ trigger, isOpen, onClose, children, align = 'left' }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.97 }}
             transition={{ duration: 0.18, ease: easing }}
-            className={`absolute z-30 top-[calc(100%+8px)] ${align === 'right' ? 'right-0' : 'left-0'} w-max max-w-[220px] bg-white border border-[#ECE8DF] rounded-2xl p-2.5`}
+            className={`absolute z-30 top-[calc(100%+8px)] ${align === 'right' ? 'right-0' : 'left-0'} w-max max-w-[260px] bg-white border border-[#ECE8DF] rounded-2xl p-2.5`}
             style={{ boxShadow: '0 20px 45px -16px rgba(23,24,28,0.2)' }}
           >
             {children}
@@ -376,16 +376,16 @@ export function DiaryForm({ initialData, isEdit }) {
               </button>
             }
           >
-            <div className="w-44">
-              <div className="px-1 py-1.5 text-[11px] text-[#B0B4BB] font-medium flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3" /> AI Writing Assistant
+            <div className="w-52">
+              <div className="px-2.5 py-1.5 text-[11px] text-[#B0B4BB] font-medium flex items-center gap-1.5 whitespace-nowrap">
+                <Sparkles className="w-3 h-3 shrink-0" /> AI Writing Assistant
               </div>
               {AI_MODES.map((m) => (
                 <button
                   key={m.value}
                   type="button"
                   onClick={() => handleAiMode(m.value)}
-                  className="w-full text-left px-2.5 py-2 rounded-xl text-[13px] text-[#3A3D45] hover:bg-[#FFF1E8] hover:text-[#FF7A45] transition-colors"
+                  className="w-full text-left px-2.5 py-2 rounded-xl text-[13px] text-[#3A3D45] hover:bg-[#FFF1E8] hover:text-[#FF7A45] transition-colors whitespace-nowrap"
                 >
                   {m.label}
                 </button>
