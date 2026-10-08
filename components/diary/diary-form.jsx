@@ -46,13 +46,13 @@ function MetaButton({ active, onClick, children }) {
 
 /**
  * Reusable anchored popover.
- * - Wrapper is `position: relative` and sized to its trigger's content (inline-block),
- *   so the menu below is always positioned relative to THIS trigger, never the row/page.
- * - Menu is `position: absolute; top: calc(100% + 8px); left/right: 0` off that same wrapper.
- * - Each instance owns its own click-outside listener, so Mood and Weather never interfere
- *   with each other's open/close state.
+ * - Wrapper is `position: relative` and sized to its trigger (inline-block),
+ *   so the menu is always positioned relative to THIS trigger.
+ * - Menu has an explicit pixel `width` (inline style) so it never collapses
+ *   to the trigger's width. Content inside is laid out against that width.
+ * - Each instance owns its own click-outside listener.
  */
-function Popover({ trigger, isOpen, onClose, children, align = 'left' }) {
+function Popover({ trigger, isOpen, onClose, children, align = 'left', width = 198 }) {
   const wrapperRef = useRef(null)
 
   useEffect(() => {
@@ -76,8 +76,8 @@ function Popover({ trigger, isOpen, onClose, children, align = 'left' }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.97 }}
             transition={{ duration: 0.18, ease: easing }}
-            className={`absolute z-30 top-[calc(100%+8px)] ${align === 'right' ? 'right-0' : 'left-0'} w-max max-w-[260px] bg-white border border-[#ECE8DF] rounded-2xl p-2.5`}
-            style={{ boxShadow: '0 20px 45px -16px rgba(23,24,28,0.2)' }}
+            className={`absolute z-30 top-[calc(100%+8px)] ${align === 'right' ? 'right-0' : 'left-0'} bg-white border border-[#ECE8DF] rounded-2xl p-2.5 box-border`}
+            style={{ width, boxShadow: '0 20px 45px -16px rgba(23,24,28,0.2)' }}
           >
             {children}
           </motion.div>
@@ -257,7 +257,9 @@ export function DiaryForm({ initialData, isEdit }) {
           />
         </div>
 
+        {/* Mood picker: 4 cols x 40px + 3 gaps x 4px + 20px padding + 2px border = 194 -> 198 */}
         <Popover
+          width={198}
           isOpen={showMoodPicker}
           onClose={() => setShowMoodPicker(false)}
           trigger={
@@ -281,14 +283,14 @@ export function DiaryForm({ initialData, isEdit }) {
           >
             Clear mood
           </button>
-          <div className="grid grid-cols-4 gap-1">
+          <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(4, 40px)' }}>
             {MOODS.map((m) => (
               <button
                 key={m.value}
                 type="button"
                 onClick={() => { setSelectedMood(m.value); setShowMoodPicker(false) }}
                 title={m.label}
-                className={`text-xl w-10 h-10 flex items-center justify-center rounded-xl hover:bg-[#FFF1E8] transition-colors ${selectedMood === m.value ? 'bg-[#FFF1E8]' : ''}`}
+                className={`text-xl w-10 h-10 shrink-0 flex items-center justify-center rounded-xl hover:bg-[#FFF1E8] transition-colors ${selectedMood === m.value ? 'bg-[#FFF1E8]' : ''}`}
               >
                 {m.emoji}
               </button>
@@ -296,7 +298,9 @@ export function DiaryForm({ initialData, isEdit }) {
           </div>
         </Popover>
 
+        {/* Weather picker: same geometry as Mood */}
         <Popover
+          width={198}
           isOpen={showWeatherPicker}
           onClose={() => setShowWeatherPicker(false)}
           trigger={
@@ -320,14 +324,14 @@ export function DiaryForm({ initialData, isEdit }) {
           >
             Clear weather
           </button>
-          <div className="grid grid-cols-4 gap-1">
+          <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(4, 40px)' }}>
             {WEATHER_OPTIONS.map((w) => (
               <button
                 key={w.value}
                 type="button"
                 onClick={() => { setSelectedWeather(w.value); setShowWeatherPicker(false) }}
                 title={w.label}
-                className={`text-xl w-10 h-10 flex items-center justify-center rounded-xl hover:bg-[#FFF1E8] transition-colors ${selectedWeather === w.value ? 'bg-[#FFF1E8]' : ''}`}
+                className={`text-xl w-10 h-10 shrink-0 flex items-center justify-center rounded-xl hover:bg-[#FFF1E8] transition-colors ${selectedWeather === w.value ? 'bg-[#FFF1E8]' : ''}`}
               >
                 {w.emoji}
               </button>
@@ -352,6 +356,7 @@ export function DiaryForm({ initialData, isEdit }) {
           <span className="text-[11px] text-[#B0B4BB] font-medium">Your entry</span>
 
           <Popover
+            width={220}
             isOpen={showAiMenu}
             onClose={() => setShowAiMenu(false)}
             align="right"
@@ -376,7 +381,7 @@ export function DiaryForm({ initialData, isEdit }) {
               </button>
             }
           >
-            <div className="w-52">
+            <div className="w-full">
               <div className="px-2.5 py-1.5 text-[11px] text-[#B0B4BB] font-medium flex items-center gap-1.5 whitespace-nowrap">
                 <Sparkles className="w-3 h-3 shrink-0" /> AI Writing Assistant
               </div>
