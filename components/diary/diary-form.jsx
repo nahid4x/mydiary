@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -45,44 +46,79 @@ function MetaButton({ active, onClick, children }) {
 }
 
 /**
- * Reusable anchored popover.
- * - Wrapper is `position: relative` and sized to its trigger (inline-block),
- *   so the menu is always positioned relative to THIS trigger.
- * - Menu has an explicit pixel `width` (inline style) so it never collapses
- *   to the trigger's width. Content inside is laid out against that width.
- * - Each instance owns its own click-outside listener.
+ * Reusable anchored popover (portal + fixed positioning).
+ * - The menu is rendered into document.body, so no ancestor (backdrop-blur,
+ *   overflow, transforms, flex sizing) can shrink or clip it.
+ * - Position is computed from the trigger's bounding box; width, background
+ *   and border are all inline styles, so the box always matches its content.
  */
 function Popover({ trigger, isOpen, onClose, children, align = 'left', width = 198 }) {
   const wrapperRef = useRef(null)
+  const menuRef = useRef(null)
+  const [pos, setPos] = useState(null)
 
   useEffect(() => {
     if (!isOpen) return
-    function handleClickOutside(e) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        onClose()
-      }
+
+    function updatePosition() {
+      if (!wrapperRef.current) return
+      const rect = wrapperRef.current.getBoundingClientRect()
+      let left = align === 'right' ? rect.right - width : rect.left
+      left = Math.max(8, Math.min(left, window.innerWidth - width - 8))
+      setPos({ top: rect.bottom + 8, left })
     }
+
+    function handleClickOutside(e) {
+      const inTrigger = wrapperRef.current?.contains(e.target)
+      const inMenu = menuRef.current?.contains(e.target)
+      if (!inTrigger && !inMenu) onClose()
+    }
+
+    updatePosition()
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isOpen, onClose])
+    window.addEventListener('resize', updatePosition)
+    window.addEventListener('scroll', updatePosition, true)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      window.removeEventListener('resize', updatePosition)
+      window.removeEventListener('scroll', updatePosition, true)
+    }
+  }, [isOpen, onClose, align, width])
 
   return (
     <div ref={wrapperRef} className="relative inline-block">
       {trigger}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -4, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -4, scale: 0.97 }}
-            transition={{ duration: 0.18, ease: easing }}
-            className={`absolute z-30 top-[calc(100%+8px)] ${align === 'right' ? 'right-0' : 'left-0'} bg-white border border-[#ECE8DF] rounded-2xl p-2.5 box-border`}
-            style={{ width, boxShadow: '0 20px 45px -16px rgba(23,24,28,0.2)' }}
-          >
-            {children}
-          </motion.div>
+      {typeof document !== 'undefined' &&
+        createPortal(
+          <AnimatePresence>
+            {isOpen && pos && (
+              <motion.div
+                ref={menuRef}
+                initial={{ opacity: 0, y: -4, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -4, scale: 0.97 }}
+                transition={{ duration: 0.18, ease: easing }}
+                style={{
+                  position: 'fixed',
+                  top: pos.top,
+                  left: pos.left,
+                  width,
+                  zIndex: 60,
+                  boxSizing: 'border-box',
+                  padding: 10,
+                  background: '#FFFFFF',
+                  border: '1px solid #ECE8DF',
+                  borderRadius: 16,
+                  boxShadow: '0 20px 45px -16px rgba(23,24,28,0.2)',
+                  transformOrigin: align === 'right' ? 'top right' : 'top left',
+                }}
+              >
+                {children}
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </div>
   )
 }
@@ -283,7 +319,7 @@ export function DiaryForm({ initialData, isEdit }) {
           >
             Clear mood
           </button>
-          <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(4, 40px)' }}>
+          <div className="grid gap-1 justify-items-center" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
             {MOODS.map((m) => (
               <button
                 key={m.value}
@@ -324,7 +360,7 @@ export function DiaryForm({ initialData, isEdit }) {
           >
             Clear weather
           </button>
-          <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(4, 40px)' }}>
+          <div className="grid gap-1 justify-items-center" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
             {WEATHER_OPTIONS.map((w) => (
               <button
                 key={w.value}
